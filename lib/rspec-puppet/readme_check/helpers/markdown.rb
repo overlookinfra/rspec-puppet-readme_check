@@ -1,4 +1,4 @@
-class RSpec::Puppet::ReadmeCheck::Helpers::Readme
+class RSpec::Puppet::ReadmeCheck::Helpers::Markdown
 
   attr_reader :path
 
@@ -11,9 +11,24 @@ class RSpec::Puppet::ReadmeCheck::Helpers::Readme
     "Readme: #{@path}"
   end
 
-  def has_standard_sections?
-    #TODO fill out the standard sections
-    (readme_structure.to_a - { 'java' => 1 }.to_a).empty?
+  def missing_standard_sections
+    module_name = readme_structure.find do |section, heading|
+      heading == 1
+    end.first.first
+    standard_sections = [
+      [module_name],
+      [module_name, nil, nil, "Table of Contents"],
+      [module_name, "Description"],
+      [module_name, "Setup"],
+      [module_name, "Setup", "Setup Requirements"],
+      [module_name, "Setup", "Beginning with #{module_name}"],
+      [module_name, "Usage"],
+      [module_name, "Reference"],
+      [module_name, "Limitations"],
+      [module_name, "Development"],
+    ]
+    readme_sections = readme_structure.collect { |x| x.first }
+    standard_sections - readme_sections
   end
 
   def find_duplicate_sections
