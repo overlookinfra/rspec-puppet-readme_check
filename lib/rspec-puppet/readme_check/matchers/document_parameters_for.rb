@@ -1,8 +1,13 @@
 RSpec::Matchers.define :document_parameters_for do |manifest_name|
-  #TODO Not functioning
-  match do |file_path|
-    markdown = Redcarpet::Markdown.new(RSpec::Puppet::ReadmeCheck::Render)
-    json = JSON.parse(markdown.render(File.read(file_path)))
+  match do |readme|
+    readme.missing_documented_parameters_for(manifest_name).empty?
+  end
+
+  failure_message do |readme|
+    "expected that #{readme.path} would document all parameters for #{manifest_name}, but some are missing:\n" +
+    readme.missing_documented_parameters_for(manifest_name).collect do |param|
+      "  - " + param
+    end.join("\n")
   end
 end
 
